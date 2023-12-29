@@ -14,7 +14,8 @@ class Download(APIView):
     def post(self, request, formate=None):
         try:
             url_data = request.POST.get("urldata")
-            if url_data:
+
+            if url_data and len(url_data) > 30:
                 if "http" not in url_data:
                     title = url_data.replace("%20"," ").replace("%22","\"")
                     search_song_url = urllib.request.urlopen(f"https://www.youtube.com/results?search_query={url_data}")
@@ -23,7 +24,7 @@ class Download(APIView):
                     video_info = yt_dlp.YoutubeDL().extract_info(url_data, download = False)
                     download_link = None
                     formate = video_info.get("formats")
-                    preferred_formats = ["720p", "480p", "360p", "240p", "144p"]
+                    preferred_formats = ["1080p", "720p", "480p", "360p", "240p", "144p"]
                     for quality in preferred_formats:
                         new_data = list(filter(lambda d:d['format_note'] == quality if "format_note" in d else "", formate))
                         for data in new_data:
