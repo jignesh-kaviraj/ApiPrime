@@ -9,6 +9,7 @@ class AppInfo(models.Model):
     url = models.CharField(max_length=200, null=True, blank=True)
     total_download = models.CharField(max_length=200, null=True, blank=True)
     force_update = models.BooleanField(default=False)
+    is_video_download = models.BooleanField(default=False)
 
     def __str__(self):
         return self.device
