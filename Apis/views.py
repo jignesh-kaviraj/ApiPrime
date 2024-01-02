@@ -88,8 +88,9 @@ class AppInfoView(APIView):
             for i in queryset:
                 dic1 = {}
                 dic1["version"]=i["version"]
-                dic1["url"]=i["url"]
+                dic1["url"]= "" if not i["url"] else i["url"]
                 dic1["force_update"]=i["force_update"]
+                dic1["is_video_download"]=i["is_video_download"]
                 main[i["device"]]=dic1
             return HttpResponse(json.dumps({"data":main, "status": 1, "message": "App information"}))
         except Exception as e:
