@@ -3,7 +3,7 @@ from .models import AppInfo, Report
 
 @admin.register(AppInfo)
 class AppInfoAdmin(admin.ModelAdmin):
-    list_display = ("device", "version", "url", "total_download", "force_update")
+    list_display = ("device", "version", "url", "total_download", "force_update","is_video_download")
 
 
 @admin.register(Report)

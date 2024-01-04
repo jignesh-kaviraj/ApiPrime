@@ -74,7 +74,7 @@ class Download(APIView):
 
 
 class AppInfoView(APIView):
-    def get(self, request, formate=None):
+    def post(self, request, formate=None):
         try:
             device_id =  request.POST.get("device_id")
             device_name = request.POST.get("type")
