@@ -15,7 +15,7 @@ class AppInfo(models.Model):
         return self.device
 
 class Report(models.Model):
-    device_id = models.CharField(max_length=200, null=True, blank=True)
+    device_id = models.CharField(max_length=200, null=True, blank=True, unique=True)
     device_name = models.ForeignKey(AppInfo,on_delete=models.CASCADE, null=True, blank=True)
     first_login_date = models.DateTimeField(default=datetime.now(), null=True, blank=True)
     last_login_date = models.DateTimeField(default=datetime.now(), null=True, blank=True)
