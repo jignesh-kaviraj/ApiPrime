@@ -8,6 +8,13 @@ from Apis.models import AppInfo, Report
 import urllib.request
 import re
 import yt_dlp
+import logging
+from django.shortcuts import render
+import pandas as pd
+from rest_framework.renderers import TemplateHTMLRenderer
+
+
+
 # Create your views here.
 
 class Download(APIView):
@@ -162,3 +169,85 @@ class AppInfoView(APIView):
 #         except Exception as e:
 #             manager.create_from_exception(e)
 #             return HttpResponse(json.dumps({"data":[], "status": 0, "message": str(e)}))
+
+
+# class Command(BaseCommand):
+#     def handle(self, *args, **options):
+#         try:
+#           refresh = False
+#           name = 'force'
+#           is_m = False
+          
+#           file_name = "test.json" if is_m else "srs.json"
+#           if refresh:
+#             data = requests.get(f"https://hsdhsgg.pages.dev/{file_name}")
+#             with open(file_name,"w") as file:
+#               file.write(json.dumps(data.json()))
+              
+          
+#           with open(file_name,"r") as read_file:
+#             data = read_file.readlines()
+#             if is_m:
+#               df = pd.DataFrame(json.loads(data[0])["AllMovieDataList"])
+#             else:
+#               df = pd.DataFrame(json.loads(data[0])["webSeriesDataList"])
+              
+#             movie = df[df["movieName"].str.contains(name, case=False)]
+#             result = movie.to_dict("records")
+#             if len(result) == 1:
+#               response = {"code":0, "data":"No Data found!"}
+#             else:
+#               response = {"code":0, "data":result}
+              
+#             return json.dumps(response)
+            
+#         except Exception as e:
+#             logging.exception("Something went wrong!")
+
+class DownloadPageMW(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "download_page_mw.html"
+
+    def get(self, request, *args, **kwarg):
+        return render(request, self.template_name)
+
+# https://8000-idx-apiprimegit-1726637790659.cluster-fu5knmr55rd44vy7k7pxk74ams.cloudworkstations.dev/apis/download_mw/?name=force&is_m=False&refresh=False
+
+
+class DownloadMW(APIView):
+    def get(self, request, *args, **kwarg):
+        try:
+            param = self.request.query_params
+            refresh = True if param.get("refresh") == "True" else False
+            name = param.get("name")
+            is_m = True if param.get("is_m") == "True" else False
+            if name:
+                file_name = "test.json" if is_m else "srs.json"
+                if refresh:
+                    data = requests.get(f"https://hsdhsgg.pages.dev/{file_name}")
+                    if data.status_code == 200:
+                        with open(file_name,"w") as file:
+                            file.write(json.dumps(data.json()))
+                    else:
+                        raise Exception(f"Something went wrong! Status code is {data.status_code}")
+                    
+                with open(file_name,"r") as read_file:
+                    data = read_file.readlines()
+                    if is_m:
+                        df = pd.DataFrame(json.loads(data[0])["AllMovieDataList"])
+                    else:
+                        df = pd.DataFrame(json.loads(data[0])["webSeriesDataList"])
+                    
+                    movie = df[df["movieName"].str.contains(name, case=False)]
+                    result = movie.to_dict("records")
+                    if len(result) == 0:
+                        response = {"status":0, "data":"No Data found!"}
+                    else:
+                        response = {"status":1, "data":result}
+            else:
+                response = {"status":0, "data":"Please Enter Name"}
+            return HttpResponse(json.dumps(response))
+        except Exception as e:
+            logging.exception("Something went wrong!")
+            manager.create_from_exception(e)
+            return HttpResponse(json.dumps({"status":0, "data": str(e)}))

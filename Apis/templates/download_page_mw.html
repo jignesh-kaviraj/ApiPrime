@@ -1,0 +1,50 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <div>
+            <div class="search_form">
+                <button onclick="fatchLatest()" id="fatch_button">Fatch latest</button>
+                <input type="radio" name="is_m" value="Movie" checked>Movie</input>
+                <input type="radio" name="is_m" value="web">Web Series</input><br><br>
+                <input type="text" id="search_data" placeholder="Search movie or web series here...">
+                <button onclick="searchData()">Search</button>
+            </div>
+            <div id="listing">
+            </div>
+        </div>
+    </body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    function fatchLatest(){
+        $.ajax({
+            url:`/apis/download_mw/?name=""&is_m=$True&refresh=True`,
+            type:"GET",
+            success:function(data){
+                document.getElementById("listing").innerHTML = `<pre>Fatch Latest Done. Now you can search movie or web series</pre>`
+                document.getElementById("fatch_button").disabled =true
+            }
+        })  
+    }
+
+    function searchData(){
+        search_data = document.getElementById("search_data").value
+        is_m = document.getElementsByName("is_m")
+        var is_movie = "True"
+        for(i = 0; i < is_m.length; i++){
+            if(is_m[i].value == "web" && is_m[i].checked == true){
+                is_movie= "False"
+            }
+        }
+
+       $.ajax({
+            url:`/apis/download_mw/?name=${search_data}&is_m=${is_movie}&refresh=False`,
+            type:"GET",
+            success:function(data){
+                document.getElementById("listing").innerHTML = `<pre>${JSON.stringify(JSON.parse(data).data, null, 4)}</pre>`
+            }
+       })
+
+    }
+</script>
