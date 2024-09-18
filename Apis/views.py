@@ -243,7 +243,7 @@ class DownloadMW(APIView):
                     if len(result) == 0:
                         response = {"status":0, "data":"No Data found!"}
                     else:
-                        response = {"status":1, "data":result}
+                        response = {"status":1, "data":result, "type":"movie" if is_m else "series"}
             else:
                 response = {"status":0, "data":"Please Enter Name"}
             return HttpResponse(json.dumps(response))

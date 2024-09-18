@@ -1,5 +1,13 @@
 <html>
     <head>
+        <style>
+            .box{
+                padding: 10px;
+                background: white;
+                box-shadow: 1px 1px 1px 1px;
+                margin: 10px 0px;
+            }
+        </style>
     </head>
     <body>
         <div>
@@ -9,7 +17,7 @@
                 <input type="radio" name="is_m" value="web">Web Series</input><br><br>
                 <input type="text" id="search_data" placeholder="Search movie or web series here...">
                 <button onclick="searchData()">Search</button>
-            </div>
+            </div><br><br>
             <div id="listing">
             </div>
         </div>
@@ -42,7 +50,32 @@
             url:`/apis/download_mw/?name=${search_data}&is_m=${is_movie}&refresh=False`,
             type:"GET",
             success:function(data){
-                document.getElementById("listing").innerHTML = `<pre>${JSON.stringify(JSON.parse(data).data, null, 4)}</pre>`
+                data = JSON.parse(data)
+                if(data.status == 1){
+                    movie_data = ""
+                    if(data.type="movie"){
+                        for(m in data.data){
+                            movie_data += `<div class="box">
+                                <img src=${data.data[m].ImageUrlHorizontal} width="200" height="100"></img>
+                                <h3>${data.data[m].movieName}</h3>
+                                <p><button onclick="window.open('${data.data[m]["tape"]}')">Watch Online</button> tape: ${data.data[m]["tape"]}</p>
+                                <p><button onclick="window.open('${data.data[m].hub}')">Download</button> hub: ${data.data[m].hub}</p>
+                                <p><button onclick="window.open('${data.data[m].server3}')">Download</button> server3: ${data.data[m].server3}</p>
+                                <p><button onclick="window.open('${data.data[m].server4}')">Download</button> server4: ${data.data[m].server4}</p>
+                                <p><button onclick="window.open('${data.data[m]["480p"]}')">Download</button> 480p: ${data.data[m]["480p"]}</p>
+                                <p><button onclick="window.open('${data.data[m]["480pS1"]}')">Download</button> 480pS1: ${data.data[m]["480pS1"]}</p>
+                                <p><button onclick="window.open('${data.data[m]["480pS2"]}')">Download</button> 480pS2: ${data.data[m]["480pS2"]}</p>
+                                <p><button onclick="window.open('${data.data[m]["480pS3"]}')">Download</button> 480pS3: ${data.data[m]["480pS3"]}</p>
+                                <p><button onclick="window.open('${data.data[m]["480pS4"]}')">Download</button> 480pS4: ${data.data[m]["480pS4"]}</p>
+                                </div>`
+                        }
+                        document.getElementById("listing").innerHTML = movie_data
+                    }else{
+                        document.getElementById("listing").innerHTML = `<pre>${JSON.stringify(data.data, null, 4)}</pre>`
+                    }
+                }else{
+                    document.getElementById("listing").innerHTML = `<pre>${data.data}</pre>`
+                }
             }
        })
 
